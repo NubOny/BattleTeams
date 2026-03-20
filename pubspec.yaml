@@ -1,0 +1,35 @@
+name: bteams
+description: "An application idea"
+publish_to: 'none' 
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.1
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.8
+  path_provider: ^2.0.0
+  shared_preferences: ^2.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
+  fonts:
+    - family: Capital
+      fonts:
+        - asset: fonts/HeadCapitalBoldGrunge.otf
+    
+    - family: SquareBold
+      fonts:
+        - asset: fonts/SquaresBold.otf
