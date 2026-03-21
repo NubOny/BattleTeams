@@ -7,5 +7,6 @@ class AppRoutes {
     RouteNames.splash: (context) => const SplashView(),
     RouteNames.welcome: (context) => const WelcomePage(),
     RouteNames.home: (context) => const HomePage(),
+    RouteNames.createTeam: (context) => const NewTeamPage(),
   };
 }
