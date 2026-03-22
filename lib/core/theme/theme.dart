@@ -7,3 +7,14 @@ class AppTheme {
   static const Color secondary = Color.fromARGB(255, 55, 129, 57);
   static const Color tertiary = Color.fromARGB(255, 206, 56, 45);
 }
+
+class TeamColors {
+  static const List<Color> teamColors = [
+    Colors.blue,
+    Colors.red,
+    Colors.green,
+    Colors.orange,
+    Colors.purple,
+    Colors.teal,
+  ];
+}

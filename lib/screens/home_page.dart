@@ -85,7 +85,7 @@ class _HomePageState extends State<HomePage> {
                               onPressed: () {
                                 Navigator.pushNamed(
                                   context,
-                                  RouteNames.createTeam,
+                                  RouteNames.selectShuffle,
                                 );
                               },
 
@@ -140,7 +140,7 @@ class _HomePageState extends State<HomePage> {
                     subtitle: 'Veja e edite seus grupos já criados',
                     icon: Icons.list,
                     onTap: () {
-                      print('clicado');
+                      Navigator.pushNamed(context, RouteNames.crewSettings);
                     },
                   ),
 
@@ -149,7 +149,7 @@ class _HomePageState extends State<HomePage> {
                     subtitle: 'Reveja os times criados que você salvou',
                     icon: Icons.access_time,
                     onTap: () {
-                      print('clicado');
+                      Navigator.pushNamed(context, RouteNames.savedSessions);
                     },
                   ),
                 ],

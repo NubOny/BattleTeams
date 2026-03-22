@@ -1,3 +1,9 @@
+import 'package:bteams/core/theme/theme.dart';
+import 'package:bteams/screens/allpages.dart';
+import 'package:bteams/services/local_storage.dart';
+import 'package:bteams/models/allmodels.dart';
+import 'package:bteams/services/controllers/save_controllers.dart';
+import 'package:bteams/services/team_generator.dart';
 import 'package:flutter/material.dart';
 
 class NewTeamPage extends StatefulWidget {
@@ -10,37 +16,101 @@ class NewTeamPage extends StatefulWidget {
 class _NewTeamPageState extends State<NewTeamPage> {
   final TextEditingController _nameController = TextEditingController();
 
-  int _selectedSkill = 1;
-  int _numTeams = 2;
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
 
-  List<Player> players = [];
-  List<Player> savedPlayers = [];
+  // Carregamento de dados
+  Future<void> _loadData() async {
+    final storage = LocalStorageService();
 
-  void _addPlayer({bool save = false}) {
+    final loadedGroups = await storage.loadGroups();
+
+    setState(() {
+      memoryGroups = loadedGroups;
+    });
+  }
+
+  String? levelNick(int level) {
+    switch (level) {
+      case 1:
+        return 'Novato';
+      case 2:
+        return 'Amador';
+      case 3:
+        return 'Pró';
+      case 4:
+        return 'Veterano';
+      default:
+        return null;
+    }
+  }
+
+  // Função de adicionar player na lista
+  void _addPlayer({bool save = false}) async {
     if (_nameController.text.isEmpty) return;
 
     final player = Player(name: _nameController.text, skill: _selectedSkill);
 
     setState(() {
       players.add(player);
-      if (save) {
-        savedPlayers.add(player);
-      }
-
-      _nameController.clear();
-      _selectedSkill = 1;
     });
+
+    // Lógica de salvar o player na memória
+    if (save) {
+      await savePlayer(player);
+    }
+
+    _nameController.clear();
+    _selectedSkill = 1;
   }
 
+  // Lógica de criar os times
   void _createTeams() {
-    // TODO: Implementar lógica (aleatória / equilibrada)
-    print("Criar times com ${players.length} jogadores");
+    if (_numTeams > players.length) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Número de times maior que número de jogadores!"),
+        ),
+      );
+      return;
+    }
+
+    final generatedTeams = generateBalancedTeams(
+      players: players,
+      numberOfTeams: _numTeams,
+    );
+
+    final session = Session(
+      teams: generatedTeams,
+      createdAt: DateTime.now(),
+      type: SessionType.balanced,
+    );
+
+    // Navegar para tela de resultado
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => ResultPage(session: session)),
+    );
   }
 
-  void _saveGroup() {
-    // TODO: Implementar persistência
-    print("Grupo salvo!");
+  // Lógica de salvamento de grupo
+  Future<void> _saveGroup(String name) async {
+    await saveGroup(name, players);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text("'$name' salvo com sucesso!")));
   }
+
+  int _selectedSkill = 1;
+  int _numTeams = 2;
+
+  List<Player> players = []; // Lista de Jogadores
+  List<Group> memoryGroups = []; // Grupos salvos na memória
+
+  bool _groupSaved = false; // Indica se o grupo já foi salvo
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +172,7 @@ class _NewTeamPageState extends State<NewTeamPage> {
                           ),
                           child: Center(
                             child: Text(
-                              "Nível $level",
+                              '${levelNick(level)}',
                               style: TextStyle(
                                 color: selected ? Colors.white : Colors.black,
                                 fontWeight: FontWeight.bold,
@@ -123,13 +193,16 @@ class _NewTeamPageState extends State<NewTeamPage> {
                         child: ElevatedButton(
                           onPressed: () => _addPlayer(save: true),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
+                            backgroundColor: AppTheme.secondary,
                             padding: EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: Text("Salvar + adicionar"),
+                          child: Text(
+                            "Salvar + adicionar",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                       SizedBox(width: 10),
@@ -137,13 +210,16 @@ class _NewTeamPageState extends State<NewTeamPage> {
                         child: ElevatedButton(
                           onPressed: () => _addPlayer(save: false),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.grey[800],
+                            backgroundColor: AppTheme.primary,
                             padding: EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          child: Text("Só adicionar"),
+                          child: Text(
+                            "Só adicionar",
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
                     ],
@@ -169,7 +245,7 @@ class _NewTeamPageState extends State<NewTeamPage> {
                     ),
                     child: ListTile(
                       title: Text(p.name),
-                      subtitle: Text("Nível ${p.skill}"),
+                      subtitle: Text("${levelNick(p.skill)}"),
                       trailing: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () {
@@ -205,39 +281,120 @@ class _NewTeamPageState extends State<NewTeamPage> {
 
             SizedBox(height: 16),
 
-            /// BOTÃO PRINCIPAL (QUADRADO E DESTACADO)
-            SizedBox(
-              width: double.infinity,
-              height: 70,
-              child: ElevatedButton(
-                onPressed: players.length >= _numTeams ? _createTeams : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+            /// Botões Principais
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 90,
+                    child: ElevatedButton(
+                      onPressed: (players.length >= _numTeams && !_groupSaved)
+                          ? () {
+                              _showSaveGroupDialog(context);
+                            }
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 6,
+                      ),
+                      child: Text(
+                        "Salvar Grupo",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                          color: players.length >= _numTeams
+                              ? Colors.white
+                              : Colors.black26,
+                        ),
+                      ),
+                    ),
                   ),
-                  elevation: 6,
                 ),
-                child: Text(
-                  "CRIAR TIMES",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1.2,
+
+                SizedBox(width: 20),
+
+                Expanded(
+                  child: SizedBox(
+                    height: 90,
+                    child: ElevatedButton(
+                      onPressed: players.length >= _numTeams
+                          ? _createTeams
+                          : null,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 6,
+                      ),
+                      child: Text(
+                        "CRIAR TIMES",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.2,
+                          color: players.length >= _numTeams
+                              ? Colors.white
+                              : Colors.black26,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
           ],
         ),
       ),
     );
   }
-}
 
-class Player {
-  final String name;
-  final int skill;
+  // Widget estilo popup para colocar o nome do grupo
+  void _showSaveGroupDialog(BuildContext context) {
+    final TextEditingController _controller = TextEditingController();
 
-  Player({required this.name, required this.skill});
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: Text("Nome do Grupo"),
+          content: TextField(
+            controller: _controller,
+            decoration: InputDecoration(hintText: "Digite o nome do grupo"),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Fecha o popup
+              },
+              child: Text("Cancelar"),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                String groupName = _controller.text.trim();
+                if (groupName.isNotEmpty) {
+                  await _saveGroup(groupName);
+                  setState(() {
+                    _groupSaved = true; // Desabilita o botão após salvar
+                  });
+                  Navigator.of(context).pop(); // Fecha o popup
+                }
+              },
+              child: Text("Salvar"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }

@@ -2,7 +2,6 @@ import 'package:bteams/routes/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:bteams/routes/app_routes.dart';
 import 'package:bteams/core/theme/theme.dart';
-import 'package:bteams/screens/allpages.dart';
 
 void main() {
   runApp(const MyApp());

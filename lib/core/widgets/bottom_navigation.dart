@@ -17,11 +17,11 @@ class AppBottomNavigation extends StatelessWidget {
         break;
 
       case 1:
-        Navigator.pushNamed(context, RouteNames.savedTeams);
+        Navigator.pushNamed(context, RouteNames.savedSessions);
         break;
 
       case 2:
-        Navigator.pushNamed(context, RouteNames.createTeam);
+        Navigator.pushNamed(context, RouteNames.selectShuffle);
         break;
 
       case 3:

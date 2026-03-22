@@ -8,5 +8,10 @@ class AppRoutes {
     RouteNames.welcome: (context) => const WelcomePage(),
     RouteNames.home: (context) => const HomePage(),
     RouteNames.createTeam: (context) => const NewTeamPage(),
+    RouteNames.selectShuffle: (context) => const SelectShuffle(),
+    RouteNames.savedSessions: (context) => const SessionsPages(),
+    RouteNames.savedCrew: (context) => const GroupPages(),
+    RouteNames.crewSettings: (context) => const GroupSettingsPage(),
+    RouteNames.settings: (context) => const SettingsPages(),
   };
 }
