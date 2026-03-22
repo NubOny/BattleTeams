@@ -9,7 +9,7 @@ class ResultPage extends StatelessWidget {
 
   const ResultPage({required this.session, super.key});
 
-  String? skillNick(int level) {
+  String skillNick(int level) {
     switch (level) {
       case 1:
         return 'Novato';
@@ -20,12 +20,14 @@ class ResultPage extends StatelessWidget {
       case 4:
         return 'Veterano';
       default:
-        return null;
+        return 'Desconhecido';
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final showSkills = session.type == SessionType.balanced;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppTheme.background,
@@ -45,11 +47,8 @@ class ResultPage extends StatelessWidget {
       body: Column(
         children: [
           SizedBox(height: 15),
-
           Container(height: 2, color: Colors.black12),
-
           SizedBox(height: 15),
-
           Expanded(
             child: ListView.builder(
               itemCount: session.teams.length,
@@ -61,7 +60,7 @@ class ResultPage extends StatelessWidget {
                     TeamColors.teamColors[index % TeamColors.teamColors.length];
 
                 return Card(
-                  color: cardColor, // Define a cor do Card
+                  color: cardColor,
                   margin: EdgeInsets.all(8),
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
@@ -74,11 +73,11 @@ class ResultPage extends StatelessWidget {
                             style: TextStyle(
                               fontSize: 20,
                               fontFamily: 'SquareBold',
-                              color: Colors
-                                  .white, // Para contraste com a cor do card
+                              color: Colors.white,
                             ),
                           ),
                         ),
+
                         SizedBox(height: 10),
 
                         Container(height: 2, color: Colors.black38),
@@ -88,13 +87,43 @@ class ResultPage extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: team.players.map((p) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 2),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
+                            if (showSkills) {
+                              // Balanced: mostra nome e skill
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 2,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      p.name,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: 'SquareBold',
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      skillNick(p.skill),
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: 'SquareBold',
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            } else {
+                              // Random: nome centralizado
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 2,
+                                ),
+                                child: Center(
+                                  child: Text(
                                     p.name,
                                     style: TextStyle(
                                       fontSize: 16,
@@ -102,27 +131,9 @@ class ResultPage extends StatelessWidget {
                                       color: Colors.white,
                                     ),
                                   ),
-
-                                  Text(
-                                    '-',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontFamily: 'SquareBold',
-                                      color: Colors.white,
-                                    ),
-                                  ),
-
-                                  Text(
-                                    '${skillNick(p.skill)}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontFamily: 'SquareBold',
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
+                                ),
+                              );
+                            }
                           }).toList(),
                         ),
                       ],
@@ -132,9 +143,8 @@ class ResultPage extends StatelessWidget {
               },
             ),
           ),
-
           Padding(
-            padding: EdgeInsetsGeometry.symmetric(horizontal: 15),
+            padding: EdgeInsets.symmetric(horizontal: 15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -156,7 +166,6 @@ class ResultPage extends StatelessWidget {
                           RouteNames.savedSessions,
                         );
                       },
-
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.secondary,
                         shape: RoundedRectangleBorder(
@@ -164,7 +173,6 @@ class ResultPage extends StatelessWidget {
                         ),
                         elevation: 6,
                       ),
-
                       child: Text(
                         "Salvar",
                         style: TextStyle(
@@ -176,9 +184,7 @@ class ResultPage extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 SizedBox(width: 20),
-
                 Expanded(
                   child: SizedBox(
                     height: 90,
@@ -190,7 +196,6 @@ class ResultPage extends StatelessWidget {
                           (Route route) => false,
                         );
                       },
-
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.tertiary,
                         shape: RoundedRectangleBorder(
@@ -198,7 +203,6 @@ class ResultPage extends StatelessWidget {
                         ),
                         elevation: 6,
                       ),
-
                       child: Text(
                         "Sair\nsem salvar",
                         textAlign: TextAlign.center,
@@ -214,7 +218,6 @@ class ResultPage extends StatelessWidget {
               ],
             ),
           ),
-
           SizedBox(height: 20),
         ],
       ),
