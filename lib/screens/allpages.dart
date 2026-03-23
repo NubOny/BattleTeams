@@ -7,4 +7,6 @@ export 'group_pages.dart';
 export 'select_shuffle.dart';
 export 'sessions_page.dart';
 export 'settings_pages.dart';
-export 'group_settings.dart';
+export 'group_detail.dart';
+export 'sessions_details_page.dart';
+export 'new_team_random_page.dart';

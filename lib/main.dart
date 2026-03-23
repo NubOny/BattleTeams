@@ -27,10 +27,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true, // Habilita o design moderno do Material 3
       ),
 
-      initialRoute: RouteNames.splash,
-
       routes: AppRoutes.routes,
+      onGenerateRoute: AppRoutes.onGenerateRoute,
+      initialRoute: RouteNames.splash,
     );
-
   }
 }

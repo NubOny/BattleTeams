@@ -49,7 +49,7 @@ class AppBottomNavigation extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.groups, size: 30),
-          label: "Times",
+          label: "Sessões",
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.add, size: 30),

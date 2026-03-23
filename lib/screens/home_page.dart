@@ -38,7 +38,6 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(height: 20),
-
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
@@ -140,7 +139,7 @@ class _HomePageState extends State<HomePage> {
                     subtitle: 'Veja e edite seus grupos já criados',
                     icon: Icons.list,
                     onTap: () {
-                      Navigator.pushNamed(context, RouteNames.crewSettings);
+                      Navigator.pushNamed(context, RouteNames.savedCrew);
                     },
                   ),
 

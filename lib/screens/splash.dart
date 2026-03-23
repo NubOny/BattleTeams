@@ -21,12 +21,7 @@ class _SplashViewState extends State<SplashView> {
   }
 
   void loadData() async {
-    final storage = LocalStorageService();
-    final sessions = await storage.loadSessions();
-
-    setState(() {
-      // _sessions = sessions
-    });
+    setState(() {});
   }
 
   Future<void> _startLoading() async {

@@ -1,13 +1,15 @@
-import 'package:bteams/routes/route_names.dart';
 import 'package:bteams/core/theme/theme.dart';
-import 'package:bteams/models/allmodels.dart';
-import 'package:bteams/services/local_storage.dart';
+import 'package:bteams/routes/route_names.dart';
 import 'package:flutter/material.dart';
+// import 'route_names.dart'; // ajuste no seu projeto
+// import 'app_theme.dart';
+import 'package:bteams/services/local_storage.dart';
+import 'package:bteams/models/allmodels.dart';
 
-class ResultPage extends StatelessWidget {
+class SessionDetailsPage extends StatelessWidget {
   final Session session;
 
-  const ResultPage({required this.session, super.key});
+  const SessionDetailsPage({super.key, required this.session});
 
   String skillNick(int level) {
     switch (level) {
@@ -24,44 +26,55 @@ class ResultPage extends StatelessWidget {
     }
   }
 
+  Future<void> deleteSession(BuildContext context) async {
+    final storage = LocalStorageService();
+    final sessions = await storage.loadSessions();
+
+    sessions.removeWhere((s) => s.createdAt == session.createdAt);
+
+    await storage.saveSessions(sessions);
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text("Sessão apagada")));
+
+    Navigator.pushReplacementNamed(context, RouteNames.savedSessions);
+  }
+
   @override
   Widget build(BuildContext context) {
     final showSkills = session.type == SessionType.balanced;
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppTheme.background,
         centerTitle: true,
-        title: Column(
-          children: [
-            SizedBox(height: 15),
-            Text(
-              "Resultado",
-              style: TextStyle(fontFamily: 'Capital', fontSize: 40),
-            ),
-          ],
+        titleSpacing: 0,
+        title: const Text(
+          "Detalhes da Sessão",
+          style: TextStyle(fontFamily: 'SquareBold', fontSize: 20),
         ),
-        automaticallyImplyLeading: false,
+        backgroundColor: AppTheme.background,
       ),
       backgroundColor: AppTheme.background,
       body: Column(
         children: [
-          SizedBox(height: 15),
+          const SizedBox(height: 15),
           Container(height: 2, color: Colors.black12),
-          SizedBox(height: 15),
+          const SizedBox(height: 15),
+
+          /// LISTA DE TIMES
           Expanded(
             child: ListView.builder(
               itemCount: session.teams.length,
               itemBuilder: (_, index) {
                 final team = session.teams[index];
 
-                // Escolhe a cor do time baseado no index, repetindo se necessário
                 final Color cardColor =
                     TeamColors.teamColors[index % TeamColors.teamColors.length];
 
                 return Card(
                   color: cardColor,
-                  margin: EdgeInsets.all(8),
+                  margin: const EdgeInsets.all(8),
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
                     child: Column(
@@ -70,7 +83,7 @@ class ResultPage extends StatelessWidget {
                         Center(
                           child: Text(
                             "Time ${index + 1}",
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 20,
                               fontFamily: 'SquareBold',
                               color: Colors.white,
@@ -78,17 +91,14 @@ class ResultPage extends StatelessWidget {
                           ),
                         ),
 
-                        SizedBox(height: 10),
-
+                        const SizedBox(height: 10),
                         Container(height: 2, color: Colors.black38),
-
-                        SizedBox(height: 10),
+                        const SizedBox(height: 10),
 
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: team.players.map((p) {
                             if (showSkills) {
-                              // Balanced: mostra nome e skill
                               return Padding(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 2,
@@ -99,7 +109,7 @@ class ResultPage extends StatelessWidget {
                                   children: [
                                     Text(
                                       p.name,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontFamily: 'SquareBold',
                                         color: Colors.white,
@@ -107,7 +117,7 @@ class ResultPage extends StatelessWidget {
                                     ),
                                     Text(
                                       skillNick(p.skill),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontFamily: 'SquareBold',
                                         color: Colors.white,
@@ -117,7 +127,6 @@ class ResultPage extends StatelessWidget {
                                 ),
                               );
                             } else {
-                              // Random: nome centralizado
                               return Padding(
                                 padding: const EdgeInsets.symmetric(
                                   vertical: 2,
@@ -125,7 +134,7 @@ class ResultPage extends StatelessWidget {
                                 child: Center(
                                   child: Text(
                                     p.name,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                       fontSize: 16,
                                       fontFamily: 'SquareBold',
                                       color: Colors.white,
@@ -143,40 +152,62 @@ class ResultPage extends StatelessWidget {
               },
             ),
           ),
+
+          /// BOTÕES
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                /// Apagar sessão
                 Expanded(
                   child: SizedBox(
                     height: 90,
                     child: ElevatedButton(
                       onPressed: () async {
-                        final storage = LocalStorageService();
-                        final sessions = await storage.loadSessions();
-                        sessions.add(session);
-                        await storage.saveSessions(sessions);
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Sessão salva com sucesso!")),
+                        final confirm = await showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: const Text(
+                              'Apagar sessão',
+                              style: TextStyle(
+                                fontFamily: 'SquareBold',
+                                fontSize: 15,
+                              ),
+                            ),
+                            content: const Text(
+                              'Tem certeza que deseja apagar esta sessão?',
+                              style: TextStyle(
+                                fontFamily: 'SquareBold',
+                                fontSize: 12,
+                              ),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text('Cancelar'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: const Text('Apagar'),
+                              ),
+                            ],
+                          ),
                         );
 
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          RouteNames.home,
-                          (Route route) => false,
-                        );
+                        if (confirm == true) {
+                          await deleteSession(context);
+                        }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.secondary,
+                        backgroundColor: Colors.red,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                         elevation: 6,
                       ),
-                      child: Text(
-                        "Salvar",
+                      child: const Text(
+                        "Apagar sessão",
+                        textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: 'SquareBold',
                           fontSize: 15,
@@ -186,27 +217,29 @@ class ResultPage extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 20),
+
+                const SizedBox(width: 20),
+
+                /// VOLTAR
                 Expanded(
                   child: SizedBox(
                     height: 90,
                     child: ElevatedButton(
                       onPressed: () {
-                        Navigator.pushNamedAndRemoveUntil(
-                          context,
-                          RouteNames.home,
-                          (Route route) => false,
-                        );
+                        Navigator.pop(context);
+
+                        // ou com rota nomeada:
+                        // Navigator.pushNamed(context, 'sua_rota_sessions');
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.tertiary,
+                        backgroundColor: Colors.grey,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
                         elevation: 6,
                       ),
-                      child: Text(
-                        "Sair\nsem salvar",
+                      child: const Text(
+                        "Voltar",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontFamily: 'SquareBold',
@@ -220,7 +253,8 @@ class ResultPage extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 20),
+
+          const SizedBox(height: 20),
         ],
       ),
     );
