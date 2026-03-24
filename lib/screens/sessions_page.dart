@@ -1,4 +1,5 @@
 import 'package:bteams/core/theme/theme.dart';
+import 'package:bteams/core/widgets/bottom_navigation.dart';
 import 'package:bteams/routes/route_names.dart';
 import 'package:flutter/material.dart';
 import 'package:bteams/models/allmodels.dart';
@@ -87,6 +88,7 @@ class _SessionsPageState extends State<SessionsPage> {
         ),
         backgroundColor: AppTheme.background,
       ),
+      bottomNavigationBar: AppBottomNavigation(currentIndex: 1),
       backgroundColor: AppTheme.background,
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -118,11 +120,29 @@ class _SessionsPageState extends State<SessionsPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('Sem sessões salvas', style: TextStyle(fontSize: 16)),
+          const Text(
+            'Sem sessoes salvas',
+            style: TextStyle(fontSize: 16, fontFamily: 'SquareBold'),
+          ),
           const SizedBox(height: 12),
+
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.secondary,
+              padding: EdgeInsets.all(20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadiusGeometry.all(Radius.circular(10)),
+              ),
+            ),
             onPressed: goToCreateSession,
-            child: const Text('Criar nova sessão'),
+            child: const Text(
+              'Criar nova sessão',
+              style: TextStyle(
+                fontFamily: 'SquareBold',
+                color: Colors.white,
+                fontSize: 15,
+              ),
+            ),
           ),
         ],
       ),

@@ -72,7 +72,10 @@ class _NewTeamPageState extends State<NewTeamPage> {
     if (_numTeams > players.length) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("Número de times maior que número de jogadores!"),
+          content: Text(
+            "Número de times maior que número de jogadores!",
+            style: TextStyle(fontFamily: 'SquareBold'),
+          ),
         ),
       );
       return;
@@ -99,9 +102,15 @@ class _NewTeamPageState extends State<NewTeamPage> {
   // Lógica de salvamento de grupo
   Future<void> _saveGroup(String name) async {
     await saveGroup(name, players);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text("'$name' salvo com sucesso!")));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          "'$name' salvo com sucesso!",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontFamily: 'SquareBold'),
+        ),
+      ),
+    );
   }
 
   int _selectedSkill = 1;
@@ -115,10 +124,14 @@ class _NewTeamPageState extends State<NewTeamPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
         elevation: 0,
-        title: Text("Dividir Times"),
+        title: Text(
+          "Dividir Times",
+          style: TextStyle(fontFamily: 'SquareBold', fontSize: 20),
+        ),
         centerTitle: true,
       ),
       body: Padding(
@@ -175,6 +188,7 @@ class _NewTeamPageState extends State<NewTeamPage> {
                               '${levelNick(level)}',
                               style: TextStyle(
                                 color: selected ? Colors.white : Colors.black,
+                                fontFamily: 'SquareBold',
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -191,23 +205,6 @@ class _NewTeamPageState extends State<NewTeamPage> {
                     children: [
                       Expanded(
                         child: ElevatedButton(
-                          onPressed: () => _addPlayer(save: true),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.secondary,
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: Text(
-                            "Salvar + adicionar",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 10),
-                      Expanded(
-                        child: ElevatedButton(
                           onPressed: () => _addPlayer(save: false),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppTheme.primary,
@@ -217,8 +214,11 @@ class _NewTeamPageState extends State<NewTeamPage> {
                             ),
                           ),
                           child: Text(
-                            "Só adicionar",
-                            style: TextStyle(color: Colors.white),
+                            "Adicionar Jogador",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'SquareBold',
+                            ),
                           ),
                         ),
                       ),
@@ -244,8 +244,21 @@ class _NewTeamPageState extends State<NewTeamPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: ListTile(
-                      title: Text(p.name),
-                      subtitle: Text("${levelNick(p.skill)}"),
+                      title: Text(
+                        p.name,
+                        style: TextStyle(
+                          fontFamily: 'SquareBold',
+                          fontSize: 16,
+                        ),
+                      ),
+                      subtitle: Text(
+                        "${levelNick(p.skill)}",
+                        style: TextStyle(
+                          fontFamily: 'SquareBold',
+                          fontSize: 15,
+                          color: Colors.black45,
+                        ),
+                      ),
                       trailing: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () {
@@ -262,9 +275,15 @@ class _NewTeamPageState extends State<NewTeamPage> {
 
             /// TIMES
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Times"),
+                Text(
+                  "Times:",
+                  style: TextStyle(fontFamily: 'SquareBold', fontSize: 16),
+                ),
+
+                SizedBox(width: 16),
+
                 DropdownButton<int>(
                   value: _numTeams,
                   items: [2, 3, 4, 5]
@@ -306,6 +325,7 @@ class _NewTeamPageState extends State<NewTeamPage> {
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 20,
+                          fontFamily: 'SquareBold',
                           fontWeight: FontWeight.bold,
                           letterSpacing: 1.2,
                           color: players.length >= _numTeams
@@ -339,6 +359,7 @@ class _NewTeamPageState extends State<NewTeamPage> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          fontFamily: 'SquareBold',
                           letterSpacing: 1.2,
                           color: players.length >= _numTeams
                               ? Colors.white
@@ -349,6 +370,44 @@ class _NewTeamPageState extends State<NewTeamPage> {
                   ),
                 ),
               ],
+            ),
+
+            SizedBox(height: 16),
+
+            SizedBox(
+              width: double.infinity,
+              height: 55,
+              child: ElevatedButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "Em Breve",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'SquareBold',
+                          fontSize: 20,
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.tertiary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  elevation: 2,
+                ),
+                child: Text(
+                  'Criar Campeonato',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontFamily: 'Capital',
+                  ),
+                ),
+              ),
             ),
           ],
         ),

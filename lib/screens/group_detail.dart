@@ -109,11 +109,6 @@ class _GroupDetailsPageState extends State<GroupDetailsPage> {
               group!.name,
               style: const TextStyle(fontFamily: 'SquareBold', fontSize: 16),
             ),
-
-            IconButton(
-              icon: const Icon(Icons.delete, color: Colors.black),
-              onPressed: () {},
-            ),
           ],
         ),
         backgroundColor: AppTheme.background,

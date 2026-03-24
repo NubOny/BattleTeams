@@ -108,6 +108,8 @@ class SelectShuffle extends StatelessWidget {
                           ),
                         ),
                       ),
+
+                      SizedBox(height: 20),
                     ],
                   ),
                 ),

@@ -1,3 +1,4 @@
+import 'package:bteams/core/widgets/bottom_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:bteams/core/theme/theme.dart';
 import 'package:bteams/routes/route_names.dart';
@@ -75,6 +76,7 @@ class _GroupsPageState extends State<GroupsPage> {
         ),
         backgroundColor: AppTheme.background,
       ),
+      bottomNavigationBar: AppBottomNavigation(currentIndex: 3),
       backgroundColor: AppTheme.background,
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -105,7 +107,7 @@ class _GroupsPageState extends State<GroupsPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('Sem grupos salvos', style: TextStyle(fontSize: 16)),
+          const Text('Sem grupos salvos', style: TextStyle(fontSize: 16, fontFamily: 'SquareBold')),
         ],
       ),
     );
